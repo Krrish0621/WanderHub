@@ -1,4 +1,5 @@
 <style>
+  /* ============ NAVBAR ============ */
   .navbar {
     background: #ffffff !important;
     padding: 0.6rem 0;
@@ -18,18 +19,20 @@
 
   .brand-text {
     font-weight: 600;
+    font-size: 1.2rem;
   }
 
   /* Search */
   .search-wrapper {
-    max-width: 420px;
     width: 100%;
+    max-width: 420px;
   }
 
   .search-inp {
     border-radius: 999px !important;
     padding: 0.55rem 1.3rem !important;
     border: 1px solid #e5e7eb !important;
+    width: 100%;
   }
 
   .search-btn {
@@ -62,9 +65,37 @@
     color: #4f46e5 !important;
   }
 
-  @media(max-width: 768px) {
+  /* ============ RESPONSIVE FIXES ============ */
+  @media (max-width: 992px) {
+    .navbar-collapse {
+      padding-top: 1rem;
+    }
+
     .search-wrapper {
-      margin: 0.8rem 0;
+      margin: 1rem 0;
+      max-width: 100%;
+    }
+
+    .navbar-nav {
+      text-align: center;
+    }
+
+    .navbar-nav .nav-item {
+      padding: 0.4rem 0;
+    }
+
+    .user-avatar {
+      margin: 0 auto;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .brand-text {
+      font-size: 1.05rem;
+    }
+
+    .search-btn {
+      padding: 0.45rem 0.7rem !important;
     }
   }
 </style>
@@ -85,15 +116,20 @@
 
     <div class="collapse navbar-collapse" id="navbarMain">
 
-      <!-- Explore more LEFT -->
-      <ul class="navbar-nav ms-0 me-auto">
+      <!-- Explore LEFT -->
+      <ul class="navbar-nav me-auto">
         <li class="nav-item">
           <a class="nav-link fw-medium" href="/listings">Explore</a>
         </li>
       </ul>
 
       <!-- SEARCH BAR -->
-      <form class="d-flex justify-content-center search-wrapper mx-lg-auto" role="search" action="/listings/search" method="GET">
+      <form 
+        class="d-flex justify-content-center align-items-center search-wrapper mx-lg-auto" 
+        role="search" 
+        action="/listings/search" 
+        method="GET"
+      >
         <input
           class="form-control search-inp"
           type="search"
@@ -106,7 +142,7 @@
       </form>
 
       <!-- RIGHT SIDE -->
-      <ul class="navbar-nav ms-lg-auto align-items-center gap-2">
+      <ul class="navbar-nav ms-lg-auto align-items-center gap-lg-2">
 
         <li class="nav-item">
           <a class="nav-link fw-medium" href="/listings/new">
@@ -144,22 +180,21 @@
         <% } %>
 
       </ul>
-
     </div>
   </div>
-<script>
-  const searchInput = document.querySelector(".search-inp");
 
-  let timeout = null;
+  <script>
+    const searchInput = document.querySelector(".search-inp");
+    let timeout = null;
 
-  searchInput.addEventListener("keyup", () => {
-    clearTimeout(timeout);
+    searchInput.addEventListener("keyup", () => {
+      clearTimeout(timeout);
 
-    timeout = setTimeout(() => {
-      if (searchInput.value.length > 1) {
-        window.location.href = `/listings/search?q=${searchInput.value}`;
-      }
-    }, 600);
-  });
-</script>
+      timeout = setTimeout(() => {
+        if (searchInput.value.length > 1) {
+          window.location.href = "/listings/search?q=" + searchInput.value;
+        }
+      }, 600);
+    });
+  </script>
 </nav>
