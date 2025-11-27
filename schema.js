@@ -10,6 +10,8 @@ module.exports.listingSchema = Joi.object({
       filename: Joi.string().allow("", null)
     }).allow(null),
 
+    category: Joi.string().required(),
+
     price: Joi.number().required().min(0),
 
     location: Joi.string().required(),
