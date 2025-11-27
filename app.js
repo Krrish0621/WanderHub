@@ -117,7 +117,8 @@ app.use((err, req, res, next) => {
   res.status(statusCode).render("error.ejs", { message });
 });
 
-// ====================
-// FOR VERCEL
-// ====================
-module.exports = app;
+const PORT = 8080;
+
+app.listen(PORT, () => {
+  console.log(`🚀 WanderHub running on port ${PORT}`);
+});
