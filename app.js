@@ -132,11 +132,11 @@ app.use((err, req, res, next) => {
 // ====================
 // START SERVER (Local Only)
 // ====================
-if (process.env.NODE_ENV !== "production") {
-  app.listen(8080, () => {
-    console.log("🚀 WanderHub running on port 8080");
-  });
-}
+// if (process.env.NODE_ENV !== "production") {
+//   app.listen(8080, () => {
+//     console.log("🚀 WanderHub running on port 8080");
+//   });
+// }
 
 // ====================
 // FOR VERCEL
