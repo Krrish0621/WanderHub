@@ -44,7 +44,8 @@ const listingSchema = new Schema({
             "home",
             "surfing",
             "lake",
-            "omg"
+            "omg",
+            "hotel"
         ]
     },
 
