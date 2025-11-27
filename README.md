@@ -54,8 +54,8 @@ It includes AI-powered descriptions, interactive maps, authentication, reviews, 
 
 ## 📁 Folder Structure
 
-WanderHub/
-│
+WanderHub/<br>
+│<br>
 ├── controllers/<br>
 ├── models/<br>
 ├── routes/<br>
