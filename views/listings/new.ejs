@@ -1,85 +1,133 @@
 <% layout("/layouts/boilerplate") %>
 
-  <div class="container mt-5">
-    <div class="row justify-content-center">
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
 
-      <div class="col-lg-8">
+      <h3 class="mb-4 fw-semibold text-center">
+        Create New Listing
+      </h3>
 
-        <h3 class="mb-4 fw-semibold text-center">
-          Create New Listing
-        </h3>
+      <div class="card p-4 shadow-sm rounded-4">
+        <form 
+          action="/listings" 
+          method="POST" 
+          enctype="multipart/form-data" 
+          class="needs-validation" 
+          novalidate
+        >
 
-        <div class="card p-4 shadow-sm rounded-4">
+          <!-- TITLE -->
+          <div class="mb-3">
+            <label class="form-label fw-medium">Title</label>
+            <input 
+              type="text" 
+              name="listing[title]" 
+              id="ai-title"
+              class="form-control rounded-pill"
+              placeholder="Eg: Cozy Beach House" 
+              required
+            />
+          </div>
 
-          <form action="/listings" method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+          <!-- LOCATION -->
+          <div class="mb-3">
+            <label class="form-label fw-medium">Location</label>
+            <input 
+              type="text" 
+              name="listing[location]" 
+              id="ai-location"
+              class="form-control rounded-pill"
+              placeholder="Eg: Goa, India" 
+              required 
+            />
+          </div>
 
-            <!-- TITLE -->
-            <div class="mb-3">
-              <label class="form-label fw-medium">Title</label>
-              <input type="text" name="listing[title]" id="ai-title" class="form-control rounded-pill"
-                placeholder="Eg: Cozy Beach House" required />
+          <!-- CATEGORY ✅ REQUIRED FIX -->
+          <div class="mb-3">
+            <label class="form-label fw-medium">Category</label>
+            <select 
+              name="listing[category]" 
+              class="form-select rounded-pill" 
+              required
+            >
+              <option value="">Select category</option>
+              <option value="room">Room</option>
+              <option value="villa">Villa</option>
+              <option value="hotel">Hotel</option>
+              <option value="cabin">Cabin</option>
+              <option value="apartment">Apartment</option>
+              <option value="resort">Resort</option>
+            </select>
+          </div>
+
+          <!-- DESCRIPTION (AI STYLE) -->
+          <div class="mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <label class="form-label fw-medium m-0">Description</label>
+              <button type="button" id="generateBtn" class="ai-btn">
+                ✨ Generate with AI
+              </button>
             </div>
 
-            <!-- LOCATION -->
-            <div class="mb-3">
-              <label class="form-label fw-medium">Location</label>
-              <input type="text" name="listing[location]" id="ai-location" class="form-control rounded-pill"
-                placeholder="Eg: Goa, India" required />
+            <div class="ai-textarea-wrapper">
+              <textarea 
+                name="listing[description]" 
+                id="ai-description" 
+                rows="5"
+                placeholder="Describe your place or let AI write it for you..." 
+                required
+              ></textarea>
             </div>
+          </div>
 
-            <!-- DESCRIPTION (AI STYLE) -->
-            <div class="mb-4">
+          <!-- IMAGE -->
+          <div class="mb-3">
+            <label class="form-label fw-medium">Upload Image</label>
+            <input 
+              type="file" 
+              name="listing[image]" 
+              class="form-control rounded-pill" 
+              required
+            >
+          </div>
 
-              <div class="d-flex justify-content-between align-items-center mb-2">
-                <label class="form-label fw-medium m-0">Description</label>
+          <!-- PRICE -->
+          <div class="mb-3">
+            <label class="form-label fw-medium">Price (₹)</label>
+            <input 
+              type="number" 
+              name="listing[price]" 
+              class="form-control rounded-pill" 
+              placeholder="eg: 1500"
+              required
+            >
+          </div>
 
-                <!-- AI Button inside description header -->
-                <button type="button" id="generateBtn" class="ai-btn">
-                  ✨ Generate with AI
-                </button>
-              </div>
+          <!-- COUNTRY -->
+          <div class="mb-3">
+            <label class="form-label fw-medium">Country</label>
+            <input 
+              type="text" 
+              name="listing[country]" 
+              class="form-control rounded-pill" 
+              placeholder="India" 
+              required
+            >
+          </div>
 
-              <div class="ai-textarea-wrapper">
-                <textarea name="listing[description]" id="ai-description" rows="5"
-                  placeholder="Describe your place or let AI write it for you..." required></textarea>
-              </div>
-
-            </div>
-
-
-
-            <!-- IMAGE -->
-            <div class="mb-3">
-              <label class="form-label fw-medium">Upload Image</label>
-              <input type="file" name="listing[image]" class="form-control rounded-pill" required>
-            </div>
-
-            <!-- PRICE -->
-            <div class="mb-3">
-              <label class="form-label fw-medium">Price (₹)</label>
-              <input type="number" name="listing[price]" class="form-control rounded-pill" placeholder="eg: 1500"
-                required>
-            </div>
-
-            <!-- COUNTRY -->
-            <div class="mb-3">
-              <label class="form-label fw-medium">Country</label>
-              <input type="text" name="listing[country]" class="form-control rounded-pill" placeholder="India" required>
-            </div>
-
-            <button type="submit" class="btn add-btn w-100 rounded-pill mt-3 py-2">
-              Create Listing
-            </button>
-
-          </form>
-
-        </div>
+          <button 
+            type="submit" 
+            class="btn add-btn w-100 rounded-pill mt-3 py-2">
+            Create Listing
+          </button>
+        </form>
       </div>
-
     </div>
   </div>
+</div>
 
- <script>
+<script>
   const generateBtn = document.getElementById("generateBtn");
 
   generateBtn.addEventListener("click", async () => {
@@ -103,20 +151,15 @@
       });
 
       const data = await res.json();
-      console.log("AI RESPONSE:", data);
 
-      // Always put something in textarea
       if (data.description && data.description.trim()) {
         descBox.value = data.description;
       } else {
-        descBox.value =
-          `Welcome to ${title} in ${location}. A comfy stay ideal for travellers. (Fallback text because AI did not respond correctly.)`;
+        descBox.value = `Welcome to ${title} in ${location}. A cozy and comfortable stay for all travelers.`;
       }
 
     } catch (err) {
-      console.error("AI FETCH ERROR:", err);
-      descBox.value =
-        `Welcome to ${title} in ${location}. A relaxing and convenient space. (Network error while calling AI.)`;
+      descBox.value = `Welcome to ${title} in ${location}. A relaxing and comfortable place to stay.`;
     }
 
     generateBtn.innerText = "✨ Generate with AI";

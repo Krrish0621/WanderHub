@@ -7,7 +7,6 @@
       <h3 class="mb-4 fw-semibold text-center">Edit Listing</h3>
 
       <div class="card p-4 shadow-sm rounded-4">
-
         <form 
           action="/listings/<%= listing._id %>?_method=PUT" 
           method="POST" 
@@ -26,7 +25,6 @@
               value="<%= listing.title %>" 
               required
             >
-            <div class="invalid-feedback">Title is required.</div>
           </div>
 
           <!-- DESCRIPTION -->
@@ -38,7 +36,23 @@
               rows="4"
               required
             ><%= listing.description %></textarea>
-            <div class="invalid-feedback">Description is required.</div>
+          </div>
+
+          <!-- CATEGORY ✅ REQUIRED FIX -->
+          <div class="mb-3">
+            <label class="form-label fw-medium">Category</label>
+            <select 
+              name="listing[category]" 
+              class="form-select rounded-pill"
+              required
+            >
+              <option value="room" <%= listing.category === "room" ? "selected" : "" %>>Room</option>
+              <option value="villa" <%= listing.category === "villa" ? "selected" : "" %>>Villa</option>
+              <option value="hotel" <%= listing.category === "hotel" ? "selected" : "" %>>Hotel</option>
+              <option value="cabin" <%= listing.category === "cabin" ? "selected" : "" %>>Cabin</option>
+              <option value="apartment" <%= listing.category === "apartment" ? "selected" : "" %>>Apartment</option>
+              <option value="resort" <%= listing.category === "resort" ? "selected" : "" %>>Resort</option>
+            </select>
           </div>
 
           <!-- ORIGINAL IMAGE -->
@@ -71,7 +85,6 @@
               value="<%= listing.price %>" 
               required
             >
-            <div class="invalid-feedback">Price is required.</div>
           </div>
 
           <!-- LOCATION + COUNTRY -->
@@ -99,7 +112,9 @@
             </div>
           </div>
 
-          <button type="submit" class="btn edit-btn w-100 rounded-pill mt-3 py-2">
+          <button 
+            type="submit" 
+            class="btn edit-btn w-100 rounded-pill mt-3 py-2">
             Save Changes
           </button>
 
