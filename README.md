@@ -55,20 +55,19 @@ It includes AI-powered descriptions, interactive maps, authentication, reviews, 
 ## 📁 Folder Structure
 
 WanderHub/
-
 │
-├── controllers/
-├── models/
-├── routes/
-├── views/
-├── public/
-├── utils/
-├── middleware.js
-├── schema.js
-├── cloudConfig.js
-├── app.js
-├── vercel.json
-├── package.json
+├── controllers/<br>
+├── models/<br>
+├── routes/<br>
+├── views/<br>
+├── public/<br>
+├── utils/<br>
+├── middleware.js<br>
+├── schema.js<br>
+├── cloudConfig.js<br>
+├── app.js<br>
+├── vercel.json<br>
+├── package.json<br>
 └── .env
 
 ---
@@ -89,19 +88,19 @@ SECRET=your_session_secret<br>
 
 ## 💻 Run Locally
 
-1. Clone the repo
+1. Clone the repo<br>
 git clone https://github.com/Krrish0621/wanderhub.git
 
-2. Go to project folder
+2. Go to project folder<br>
 cd wanderhub
 
-3. Install dependencies
+3. Install dependencies<br>
 npm install
 
-4. Start the server
+4. Start the server<br>
 npm start
 
-5. Open in browser
+5. Open in browser<br>
 http://localhost:8080/listings
 
 ## 🙌 Future Features
@@ -115,7 +114,7 @@ http://localhost:8080/listings
 ---
 
 ## 👨‍💻 Author
-**Krrish Chaturvedi**
-GitHub: https://github.com/Krrish0621
-Project: WanderHub
+**Krrish Chaturvedi**<br>
+GitHub: https://github.com/Krrish0621<br>
+Project: WanderHub<br>
 ---
