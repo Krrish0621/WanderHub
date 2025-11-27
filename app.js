@@ -10,13 +10,12 @@ const methodOverride = require("method-override");
 const ExpressError = require("./utils/ExpressError.js");
 const ejsMate = require("ejs-mate");
 const session = require("express-session");
-const MongoStore = require("connect-mongo");
 const flash = require("connect-flash");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const User = require("./models/user.js");
 
-// Routes
+// ✅ Routes
 const listings = require("./routes/listing.js");
 const reviews = require("./routes/review.js");
 const userRouter = require("./routes/user.js");
@@ -40,52 +39,40 @@ app.use(methodOverride("_method"));
 app.use(express.static(path.join(__dirname, "public")));
 
 // ====================
-// DATABASE + SESSIONS + PASSPORT
+// DATABASE CONNECTION
 // ====================
 async function main() {
   await mongoose.connect(dbUrl);
   console.log("✅ MongoDB Connected");
-
-  const store = MongoStore.create({
-    mongoUrl: dbUrl,
-    crypto: {
-      secret: process.env.SECRET || "mysupersecretcode"
-    },
-    touchAfter: 24 * 3600
-  });
-
-  store.on("error", err => {
-    console.log("❌ Mongo Store Error:", err);
-  });
-
-  const sessionOptions = {
-    store,
-    name: "wanderhub",
-    secret: process.env.SECRET || "mysupersecretcode",
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      expires: Date.now() + 7 * 24 * 60 * 60 * 1000,
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-      httpOnly: true
-    }
-  };
-
-  app.use(session(sessionOptions));
-  app.use(flash());
-
-  // PASSPORT
-  app.use(passport.initialize());
-  app.use(passport.session());
-
-  passport.use(new LocalStrategy(User.authenticate()));
-  passport.serializeUser(User.serializeUser());
-  passport.deserializeUser(User.deserializeUser());
-
-  console.log("✅ Session & Passport Ready");
 }
 
 main().catch(err => console.log("DB ERROR:", err));
+
+// ====================
+// SESSION (NO CONNECT-MONGO — VERCEL SAFE)
+// ====================
+const sessionOptions = {
+  secret: process.env.SECRET || "wanderhub_secret_key",
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    httpOnly: true,
+    maxAge: 1000 * 60 * 60 * 24 * 7 // 7 days
+  }
+};
+
+app.use(session(sessionOptions));
+app.use(flash());
+
+// ====================
+// PASSPORT
+// ====================
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
 // ====================
 // GLOBAL LOCALS
@@ -97,7 +84,9 @@ app.use((req, res, next) => {
   next();
 });
 
-// ✅ HOMEPAGE REDIRECT
+// ====================
+// HOMEPAGE
+// ====================
 app.get("/", (req, res) => {
   res.redirect("/listings");
 });
@@ -110,9 +99,8 @@ app.use("/", userRouter);
 app.use("/listings", listings);
 app.use("/listings/:id/reviews", reviews);
 
-
 // ====================
-// 404 HANDLER (Node 22 SAFE)
+// 404 HANDLER
 // ====================
 app.use((req, res, next) => {
   next(new ExpressError(404, "Page Not Found"));
@@ -128,15 +116,6 @@ app.use((err, req, res, next) => {
 
   res.status(statusCode).render("error.ejs", { message });
 });
-
-// ====================
-// START SERVER (Local Only)
-// ====================
-// if (process.env.NODE_ENV !== "production") {
-//   app.listen(8080, () => {
-//     console.log("🚀 WanderHub running on port 8080");
-//   });
-// }
 
 // ====================
 // FOR VERCEL
