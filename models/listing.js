@@ -33,7 +33,7 @@ const listingSchema = new Schema({
     // ✅ CATEGORY FOR FILTERING
     category: {
         type: String,
-        required: true,
+        default:"room",
         enum: [
             "trending",
             "room",
