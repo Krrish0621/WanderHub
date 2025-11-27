@@ -1,0 +1,465 @@
+<% layout("/layouts/boilerplate") %>
+
+  <style>
+    body {
+      background: #f7f8fc;
+    }
+
+    .page-wrapper {
+      padding: 1.5rem 0 2.5rem 0;
+    }
+
+    /* ================= FILTER BAR ================= */
+    .filter-bar {
+      background: white;
+      padding: 1.2rem 1.5rem;
+      border-radius: 22px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 2rem;
+      margin-bottom: 2.3rem;
+      flex-wrap: nowrap;
+    }
+
+    /* SCROLLABLE ICON ROW */
+    .filters {
+      display: flex;
+      gap: 1.2rem;
+      align-items: center;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      white-space: nowrap;
+      padding-bottom: .6rem;
+      scroll-behavior: smooth;
+    }
+
+    /* SCROLLBAR STYLE (Chrome, Edge, Brave, Safari) */
+    .filters::-webkit-scrollbar {
+      height: 6px;
+    }
+
+    .filters::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 10px;
+    }
+
+    .filters::-webkit-scrollbar-thumb {
+      background: #4f46e5;
+      border-radius: 10px;
+    }
+
+    .filters::-webkit-scrollbar-thumb:hover {
+      background: #3730a3;
+    }
+
+    /* FILTER ICON */
+    .filter {
+      min-width: 74px;
+      height: 74px;
+      border-radius: 50%;
+      background: #f4f6fb;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: .75rem;
+      cursor: pointer;
+      transition: .25s;
+      box-shadow: inset 0 0 0 1px #e5e7eb;
+      flex-shrink: 0;
+    }
+
+    .filter i {
+      font-size: 1.25rem;
+      margin-bottom: 6px;
+    }
+
+    .filter:hover {
+      transform: translateY(-3px);
+      background: #eef2ff;
+    }
+
+    .filter.active {
+      background: #4f46e5;
+      color: white;
+    }
+
+    /* ============= TAX TOGGLE ============= */
+    .tax-toggle-container {
+      background: #f8fafc;
+      padding: 0.7rem 1rem;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      min-width: 260px;
+      box-shadow: inset 0 0 0 1px #e5e7eb;
+      flex-shrink: 0;
+    }
+
+    .tax-label {
+      font-size: .85rem;
+      font-weight: 500;
+    }
+
+    .tax-switch {
+      position: relative;
+      width: 48px;
+      height: 24px;
+    }
+
+    .tax-switch input {
+      display: none;
+    }
+
+    .slider {
+      position: absolute;
+      inset: 0;
+      background: #d1d5db;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: .4s;
+    }
+
+    .slider:before {
+      content: "";
+      position: absolute;
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      top: 3px;
+      background: white;
+      border-radius: 50%;
+      transition: .4s;
+    }
+
+    .tax-switch input:checked+.slider {
+      background: #4f46e5;
+    }
+
+    .tax-switch input:checked+.slider:before {
+      transform: translateX(24px);
+    }
+
+    /* ============= LISTINGS ============= */
+    .listing-link {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .listing-card {
+      border-radius: 20px !important;
+      overflow: hidden;
+      border: none;
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.15);
+      transition: .3s;
+    }
+
+    .listing-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 30px 60px rgba(0, 0, 0, .25);
+    }
+
+    .listing-card img {
+      height: 16rem;
+      object-fit: cover;
+    }
+
+    .listing-title {
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    .listing-location {
+      font-size: 0.82rem;
+      color: gray;
+    }
+
+    .listing-chip {
+      background: #eef2ff;
+      color: #4f46e5;
+      padding: 2px 10px;
+      border-radius: 999px;
+      font-size: .65rem;
+      margin-left: 6px;
+    }
+
+    .tax-info {
+      display: none;
+      font-size: .8rem;
+      color: gray;
+    }
+
+    .empty-state {
+      display: none;
+      text-align: center;
+      padding: 3.4rem 1rem;
+      color: #6b7280;
+    }
+
+    /* ================= CHATBOT ================= */
+    .chatbot-container {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      z-index: 10000;
+    }
+
+    #chatbot-toggle {
+      width: 60px;
+      height: 60px;
+      background: #4f46e5;
+      border-radius: 50%;
+      color: white;
+      display: grid;
+      place-items: center;
+      font-size: 1.6rem;
+      cursor: pointer;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+    }
+
+    .chatbot-box {
+      width: 360px;
+      height: 480px;
+      background: white;
+      border-radius: 22px;
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, .3);
+      margin-bottom: 15px;
+    }
+
+    .chatbot-header {
+      background: #4f46e5;
+      color: white;
+      padding: 14px 18px;
+      display: flex;
+      justify-content: space-between;
+      font-weight: 600;
+    }
+
+    .chatbot-messages {
+      flex: 1;
+      padding: 15px;
+      background: #f9fafb;
+      overflow-y: auto;
+    }
+
+    .bot-msg,
+    .user-msg {
+      max-width: 80%;
+      padding: 10px 14px;
+      border-radius: 16px;
+      margin-bottom: 10px;
+      font-size: .85rem;
+    }
+
+    .bot-msg {
+      background: #eef2ff;
+    }
+
+    .user-msg {
+      background: #4f46e5;
+      color: white;
+      margin-left: auto;
+    }
+
+    .typing {
+      font-style: italic;
+      color: #6b7280;
+    }
+
+    .chatbot-input-area {
+      display: flex;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .chatbot-input-area input {
+      flex: 1;
+      border: none;
+      padding: 12px;
+      outline: none;
+    }
+
+    .chatbot-input-area button {
+      background: #4f46e5;
+      color: white;
+      border: none;
+      padding: 0 18px;
+    }
+  </style>
+
+  <div class="container page-wrapper">
+
+    <div class="filter-bar">
+
+      <div class="filters">
+        <div class="filter active" data-filter="all"><i class="fa-solid fa-globe"></i><span>All</span></div>
+        <div class="filter" data-filter="trending"><i class="fa-solid fa-fire"></i><span>Trending</span></div>
+        <div class="filter" data-filter="room"><i class="fa-solid fa-bed"></i><span>Rooms</span></div>
+        <div class="filter" data-filter="city"><i class="fa-solid fa-city"></i><span>Cities</span></div>
+        <div class="filter" data-filter="mountain"><i class="fa-solid fa-mountain"></i><span>Mountains</span></div>
+        <div class="filter" data-filter="pool"><i class="fa-solid fa-person-swimming"></i><span>Pools</span></div>
+        <div class="filter" data-filter="camping"><i class="fa-solid fa-campground"></i><span>Camping</span></div>
+        <div class="filter" data-filter="home"><i class="fa-solid fa-house"></i><span>Homes</span></div>
+        <div class="filter" data-filter="surfing"><i class="fa-solid fa-person-skating"></i><span>Surfing</span></div>
+        <div class="filter" data-filter="lake"><i class="fa-solid fa-water"></i><span>Lakefronts </span></div>
+        <div class="filter" data-filter="omg"><i class="fa-solid fa-star"></i><span>OMG!</span></div>
+        <div class="filter" data-filter="beach">
+          <i class="fa-solid fa-umbrella-beach"></i>
+          <span>Beach</span>
+        </div>
+
+        <div class="filter" data-filter="countryside">
+          <i class="fa-solid fa-tree"></i>
+          <span>Countryside</span>
+        </div>
+
+        <div class="filter" data-filter="luxury">
+          <i class="fa-solid fa-crown"></i>
+          <span>Luxury</span>
+        </div>
+
+        <div class="filter" data-filter="budget">
+          <i class="fa-solid fa-wallet"></i>
+          <span>Budget</span>
+        </div>
+
+        <div class="filter" data-filter="petfriendly">
+          <i class="fa-solid fa-paw"></i>
+          <span>Pet-friendly</span>
+        </div>
+
+        <div class="filter" data-filter="family">
+          <i class="fa-solid fa-people-roof"></i>
+          <span>Family</span>
+        </div>
+
+        <div class="filter" data-filter="workation">
+          <i class="fa-solid fa-briefcase"></i>
+          <span>Workation</span>
+        </div>
+
+        <div class="filter" data-filter="romantic">
+          <i class="fa-solid fa-heart"></i>
+          <span>Romantic</span>
+        </div>
+
+      </div>
+
+      <div class="tax-toggle-container">
+        <span class="tax-label">Display total after taxes</span>
+        <label class="tax-switch">
+          <input type="checkbox" id="flexSwitchCheckDefault">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+    </div>
+
+    <div id="listingsGrid" class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 g-4">
+      <% for (let listing of allListings) { %>
+        <div class="col listing-col" data-category="<%= listing.category || 'all' %>">
+          <a href="/listings/<%= listing._id %>" class="listing-link">
+            <div class="card listing-card">
+              <img src="<%= listing.image?.url || '/images/placeholder.jpg' %>">
+              <div class="card-body">
+                <div class="listing-title">
+                  <%= listing.title %>
+                    <% if (listing.category) { %>
+                      <span class="listing-chip">
+                        <%= listing.category %>
+                      </span>
+                      <% } %>
+                </div>
+                <div class="listing-location">
+                  <%= listing.location %>, <%= listing.country %>
+                </div>
+                <p><b>₹<%= listing.price.toLocaleString("en-IN") %></b> / night
+                  <span class="tax-info"> +18% GST</span>
+                </p>
+              </div>
+            </div>
+          </a>
+        </div>
+        <% } %>
+    </div>
+
+    <div id="emptyState" class="empty-state">
+      <h5>No stays match this filter</h5>
+    </div>
+
+  </div>
+
+  <!-- ================= AI CHATBOT ================= -->
+  <div class="chatbot-container">
+    <div id="chatbot-toggle">🤖</div>
+
+    <div class="chatbot-box" id="chatbot-box">
+      <div class="chatbot-header">
+        <span>WanderBot</span>
+        <button id="chatbot-close">✖</button>
+      </div>
+
+      <div id="chatbot-messages" class="chatbot-messages">
+        <div class="bot-msg">👋 Hi! I’m WanderBot. Ask me anything about travel.</div>
+      </div>
+
+      <div class="chatbot-input-area">
+        <input id="chatbot-input" placeholder="Type your message...">
+        <button id="chatbot-send">Send</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/chatbot.js"></script>
+
+  <script>
+    const taxSwitch = document.getElementById("flexSwitchCheckDefault");
+
+    taxSwitch.addEventListener("change", () => {
+      document.querySelectorAll(".tax-info").forEach(info => {
+        info.style.display = taxSwitch.checked ? "inline" : "none";
+      });
+    });
+
+    const filters = document.querySelectorAll(".filter");
+    const listings = document.querySelectorAll(".listing-col");
+    const emptyState = document.getElementById("emptyState");
+
+    let activeCategory = "all";
+
+    function applyFilter() {
+      let visible = 0;
+
+      listings.forEach(card => {
+        const category = card.dataset.category.toLowerCase();
+
+        if (activeCategory === "all" || category === activeCategory) {
+          card.style.display = "block";
+          visible++;
+        } else {
+          card.style.display = "none";
+        }
+      });
+
+      emptyState.style.display = visible === 0 ? "block" : "none";
+    }
+
+    filters.forEach(btn => {
+      btn.addEventListener("click", () => {
+        filters.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+
+        activeCategory = btn.dataset.filter;
+        applyFilter();
+      });
+    });
+
+    applyFilter();
+  </script>
+
+  <script src="/js/chatbot.js"></script>

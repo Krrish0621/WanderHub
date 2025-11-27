@@ -1,0 +1,165 @@
+<style>
+  .navbar {
+    background: #ffffff !important;
+    padding: 0.6rem 0;
+  }
+
+  /* Logo + brand */
+  .brand-group {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .nav-brand-icon {
+    color: #4f46e5;
+    font-size: 1.7rem;
+  }
+
+  .brand-text {
+    font-weight: 600;
+  }
+
+  /* Search */
+  .search-wrapper {
+    max-width: 420px;
+    width: 100%;
+  }
+
+  .search-inp {
+    border-radius: 999px !important;
+    padding: 0.55rem 1.3rem !important;
+    border: 1px solid #e5e7eb !important;
+  }
+
+  .search-btn {
+    background: #4f46e5 !important;
+    color: #fff !important;
+    border: none !important;
+    border-radius: 50% !important;
+    padding: 0.5rem 0.9rem !important;
+  }
+
+  .search-btn:hover {
+    background: #4338ca !important;
+  }
+
+  /* Avatar */
+  .user-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #4f46e5;
+    cursor: pointer;
+  }
+
+  .nav-link {
+    color: #1f2937 !important;
+  }
+
+  .nav-link:hover {
+    color: #4f46e5 !important;
+  }
+
+  @media(max-width: 768px) {
+    .search-wrapper {
+      margin: 0.8rem 0;
+    }
+  }
+</style>
+
+<nav class="navbar navbar-expand-lg sticky-top shadow-sm">
+  <div class="container">
+
+    <!-- LEFT SIDE -->
+    <a class="navbar-brand brand-group" href="/listings">
+      <i class="fa-regular fa-compass nav-brand-icon"></i>
+      <span class="brand-text">WanderHub</span>
+    </a>
+
+    <!-- TOGGLER -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarMain">
+
+      <!-- Explore more LEFT -->
+      <ul class="navbar-nav ms-0 me-auto">
+        <li class="nav-item">
+          <a class="nav-link fw-medium" href="/listings">Explore</a>
+        </li>
+      </ul>
+
+      <!-- SEARCH BAR -->
+      <form class="d-flex justify-content-center search-wrapper mx-lg-auto" role="search" action="/listings/search" method="GET">
+        <input
+          class="form-control search-inp"
+          type="search"
+          name="q"
+          placeholder="Search destinations..."
+        >
+        <button class="btn search-btn ms-2" type="submit">
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+      </form>
+
+      <!-- RIGHT SIDE -->
+      <ul class="navbar-nav ms-lg-auto align-items-center gap-2">
+
+        <li class="nav-item">
+          <a class="nav-link fw-medium" href="/listings/new">
+            Airbnb your home
+          </a>
+        </li>
+
+        <% if(!currUser) { %>
+          <li class="nav-item">
+            <a class="nav-link fw-medium" href="/signup">Sign Up</a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link fw-medium" href="/login">Login</a>
+          </li>
+        <% } %>
+
+        <% if(currUser) { %>
+          <!-- Avatar -->
+          <li class="nav-item">
+            <a href="/profile">
+              <img 
+                src="<%= currUser.avatar || 'https://cdn-icons-png.flaticon.com/512/149/149071.png' %>" 
+                class="user-avatar"
+                alt="User Avatar"
+              >
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link fw-medium text-danger" href="/logout">
+              Logout
+            </a>
+          </li>
+        <% } %>
+
+      </ul>
+
+    </div>
+  </div>
+<script>
+  const searchInput = document.querySelector(".search-inp");
+
+  let timeout = null;
+
+  searchInput.addEventListener("keyup", () => {
+    clearTimeout(timeout);
+
+    timeout = setTimeout(() => {
+      if (searchInput.value.length > 1) {
+        window.location.href = `/listings/search?q=${searchInput.value}`;
+      }
+    }, 600);
+  });
+</script>
+</nav>

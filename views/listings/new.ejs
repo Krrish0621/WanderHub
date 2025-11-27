@@ -1,0 +1,125 @@
+<% layout("/layouts/boilerplate") %>
+
+  <div class="container mt-5">
+    <div class="row justify-content-center">
+
+      <div class="col-lg-8">
+
+        <h3 class="mb-4 fw-semibold text-center">
+          Create New Listing
+        </h3>
+
+        <div class="card p-4 shadow-sm rounded-4">
+
+          <form action="/listings" method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+
+            <!-- TITLE -->
+            <div class="mb-3">
+              <label class="form-label fw-medium">Title</label>
+              <input type="text" name="listing[title]" id="ai-title" class="form-control rounded-pill"
+                placeholder="Eg: Cozy Beach House" required />
+            </div>
+
+            <!-- LOCATION -->
+            <div class="mb-3">
+              <label class="form-label fw-medium">Location</label>
+              <input type="text" name="listing[location]" id="ai-location" class="form-control rounded-pill"
+                placeholder="Eg: Goa, India" required />
+            </div>
+
+            <!-- DESCRIPTION (AI STYLE) -->
+            <div class="mb-4">
+
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <label class="form-label fw-medium m-0">Description</label>
+
+                <!-- AI Button inside description header -->
+                <button type="button" id="generateBtn" class="ai-btn">
+                  ✨ Generate with AI
+                </button>
+              </div>
+
+              <div class="ai-textarea-wrapper">
+                <textarea name="listing[description]" id="ai-description" rows="5"
+                  placeholder="Describe your place or let AI write it for you..." required></textarea>
+              </div>
+
+            </div>
+
+
+
+            <!-- IMAGE -->
+            <div class="mb-3">
+              <label class="form-label fw-medium">Upload Image</label>
+              <input type="file" name="listing[image]" class="form-control rounded-pill" required>
+            </div>
+
+            <!-- PRICE -->
+            <div class="mb-3">
+              <label class="form-label fw-medium">Price (₹)</label>
+              <input type="number" name="listing[price]" class="form-control rounded-pill" placeholder="eg: 1500"
+                required>
+            </div>
+
+            <!-- COUNTRY -->
+            <div class="mb-3">
+              <label class="form-label fw-medium">Country</label>
+              <input type="text" name="listing[country]" class="form-control rounded-pill" placeholder="India" required>
+            </div>
+
+            <button type="submit" class="btn add-btn w-100 rounded-pill mt-3 py-2">
+              Create Listing
+            </button>
+
+          </form>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+ <script>
+  const generateBtn = document.getElementById("generateBtn");
+
+  generateBtn.addEventListener("click", async () => {
+    const title = document.getElementById("ai-title").value.trim();
+    const location = document.getElementById("ai-location").value.trim();
+    const descBox = document.getElementById("ai-description");
+
+    if (!title || !location) {
+      alert("Please fill Title and Location first");
+      return;
+    }
+
+    generateBtn.innerText = "✨ Generating...";
+    generateBtn.disabled = true;
+
+    try {
+      const res = await fetch("/ai/generate-description", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, location })
+      });
+
+      const data = await res.json();
+      console.log("AI RESPONSE:", data);
+
+      // Always put something in textarea
+      if (data.description && data.description.trim()) {
+        descBox.value = data.description;
+      } else {
+        descBox.value =
+          `Welcome to ${title} in ${location}. A comfy stay ideal for travellers. (Fallback text because AI did not respond correctly.)`;
+      }
+
+    } catch (err) {
+      console.error("AI FETCH ERROR:", err);
+      descBox.value =
+        `Welcome to ${title} in ${location}. A relaxing and convenient space. (Network error while calling AI.)`;
+    }
+
+    generateBtn.innerText = "✨ Generate with AI";
+    generateBtn.disabled = false;
+  });
+</script>

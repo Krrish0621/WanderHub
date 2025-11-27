@@ -1,0 +1,189 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="container mt-5">
+
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+
+      <!-- TITLE -->
+      <h3 class="fw-bold mb-2"><%= listing.title %></h3>
+      <p class="listing-location mb-3">
+        <%= listing.location %>, <%= listing.country %>
+      </p>
+
+      <!-- IMAGE -->
+      <img 
+        src="<%= listing.image?.url || '/images/placeholder.jpg' %>" 
+        class="show-img w-100 mb-4 rounded-4 shadow"
+      />
+
+      <!-- DETAILS -->
+      <div class="card p-4 shadow-sm border-0 rounded-4">
+
+        <p class="mb-2">
+          Owned by: <strong>@<%= listing.owner.username %></strong>
+        </p>
+
+        <p class="text-muted">
+          <%= listing.description %>
+        </p>
+
+        <p class="fw-bold fs-5">
+          ₹ <%= listing.price.toLocaleString("en-IN") %> / night
+        </p>
+
+        <% if (currUser && listing.owner._id.equals(currUser._id)) { %>
+          <div class="row my-4">
+            <div class="col-md-6">
+              <a href="/listings/<%= listing._id %>/edit" class="btn edit-btn w-100">Edit</a>
+            </div>
+
+            <div class="col-md-6">
+              <form action="/listings/<%= listing._id %>?_method=DELETE" method="POST"
+                onsubmit="return confirm('Delete this listing?')">
+                <button class="btn btn-danger w-100">Delete</button>
+              </form>
+            </div>
+          </div>
+        <% } %>
+
+        <hr>
+
+        <!-- ✅ MAP -->
+        <h4 class="mt-4 mb-3">Location on Map</h4>
+
+        <div id="map"></div>
+
+        <script>
+          const map_token = "<%= process.env.MAPTILER_KEY %>";
+
+          const coordinates = <%- JSON.stringify(
+            listing.geometry && listing.geometry.coordinates 
+              ? listing.geometry.coordinates 
+              : [0,0]
+          ) %>;
+
+          console.log("Coordinates from DB:", coordinates);
+        </script>
+
+        <script src="https://cdn.maptiler.com/maptiler-sdk-js/v1.1.1/maptiler-sdk.umd.min.js"></script>
+        <script src="/js/map.js"></script>
+
+        <hr>
+
+        <!-- ✅ MODERN STAR REVIEW SYSTEM -->
+        <% if (currUser) { %>
+
+        <h4 class="mb-3">Leave a Review</h4>
+
+        <form action="/listings/<%= listing._id %>/reviews" method="POST" novalidate>
+
+          <input type="hidden" id="ratingInput" name="review[rating]" required>
+
+          <div class="rating-box mb-3">
+            <span class="star" data-value="1">⭐</span>
+            <span class="star" data-value="2">⭐</span>
+            <span class="star" data-value="3">⭐</span>
+            <span class="star" data-value="4">⭐</span>
+            <span class="star" data-value="5">⭐</span>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Comment</label>
+            <textarea name="review[comment]" class="form-control rounded-4"
+              rows="3" required></textarea>
+          </div>
+
+          <button class="btn btn-dark rounded-pill px-4">Submit Review</button>
+
+        </form>
+
+        <hr>
+        <% } %>
+
+        <!-- ✅ ALL REVIEWS -->
+        <h4 class="mb-3">All Reviews</h4>
+
+        <% if (listing.reviews.length === 0) { %>
+          <p class="text-muted">No reviews yet.</p>
+        <% } %>
+
+        <div class="row g-4">
+        <% for (let review of listing.reviews) { %>
+
+          <div class="col-md-6">
+            <div class="review-card p-3 rounded-4 shadow-sm h-100">
+              <h6 class="fw-semibold">
+                @<%= review.author.username %>
+              </h6>
+
+              <div class="review-stars mb-2">
+                <% for (let i = 0; i < review.rating; i++) { %>⭐<% } %>
+              </div>
+
+              <p><%= review.comment %></p>
+
+              <% if(currUser && review.author._id.equals(currUser._id)) { %>
+              <form action="/listings/<%= listing._id %>/reviews/<%= review._id %>?_method=DELETE"
+                method="POST" onsubmit="return confirm('Delete this review?')">
+                <button class="btn btn-sm btn-danger mt-2">Delete</button>
+              </form>
+              <% } %>
+            </div>
+          </div>
+
+        <% } %>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<!-- STAR SCRIPT -->
+<style>
+  #map {
+    height: 420px;
+    width: 100%;
+    border-radius: 25px;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.2);
+    margin-bottom: 30px;
+  }
+
+  .rating-box {
+    font-size: 2rem;
+    letter-spacing: 8px;
+  }
+
+  .star {
+    cursor: pointer;
+    filter: grayscale(100%);
+    transition: 0.3s ease;
+  }
+
+  .star.active {
+    filter: grayscale(0%);
+    transform: scale(1.2);
+  }
+</style>
+
+<script>
+  const stars = document.querySelectorAll(".star");
+  const ratingInput = document.getElementById("ratingInput");
+
+  stars.forEach(star => {
+    star.addEventListener("click", () => {
+      const rating = star.dataset.value;
+      ratingInput.value = rating;
+
+      stars.forEach(s => {
+        s.classList.remove("active");
+        if (s.dataset.value <= rating) {
+          s.classList.add("active");
+        }
+      });
+    });
+  });
+</script>
