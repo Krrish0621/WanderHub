@@ -40,54 +40,52 @@ app.use(methodOverride("_method"));
 app.use(express.static(path.join(__dirname, "public")));
 
 // ====================
-// DATABASE
+// DATABASE + SESSIONS + PASSPORT
 // ====================
 async function main() {
   await mongoose.connect(dbUrl);
   console.log("✅ MongoDB Connected");
+
+  const store = MongoStore.create({
+    mongoUrl: dbUrl,
+    crypto: {
+      secret: process.env.SECRET || "mysupersecretcode"
+    },
+    touchAfter: 24 * 3600
+  });
+
+  store.on("error", err => {
+    console.log("❌ Mongo Store Error:", err);
+  });
+
+  const sessionOptions = {
+    store,
+    name: "wanderhub",
+    secret: process.env.SECRET || "mysupersecretcode",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      expires: Date.now() + 7 * 24 * 60 * 60 * 1000,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      httpOnly: true
+    }
+  };
+
+  app.use(session(sessionOptions));
+  app.use(flash());
+
+  // PASSPORT
+  app.use(passport.initialize());
+  app.use(passport.session());
+
+  passport.use(new LocalStrategy(User.authenticate()));
+  passport.serializeUser(User.serializeUser());
+  passport.deserializeUser(User.deserializeUser());
+
+  console.log("✅ Session & Passport Ready");
 }
+
 main().catch(err => console.log("DB ERROR:", err));
-
-// ====================
-// SESSION STORE
-// ====================
-const store = MongoStore.create({
-  mongoUrl: dbUrl,
-  crypto: {
-    secret: process.env.SECRET
-  },
-  touchAfter: 24 * 3600
-});
-
-store.on("error", err => {
-  console.log("❌ Mongo Store Error:", err);
-});
-
-const sessionOptions = {
-  store,
-  name: "wanderhub",
-  secret: process.env.SECRET,
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    expires: Date.now() + 7 * 24 * 60 * 60 * 1000,
-    maxAge: 7 * 24 * 60 * 60 * 1000,
-    httpOnly: true
-  }
-};
-
-app.use(session(sessionOptions));
-app.use(flash());
-
-// ====================
-// PASSPORT
-// ====================
-app.use(passport.initialize());
-app.use(passport.session());
-
-passport.use(new LocalStrategy(User.authenticate()));
-passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser());
 
 // ====================
 // GLOBAL LOCALS
@@ -99,6 +97,11 @@ app.use((req, res, next) => {
   next();
 });
 
+// ✅ HOMEPAGE REDIRECT
+app.get("/", (req, res) => {
+  res.redirect("/listings");
+});
+
 // ====================
 // ROUTES
 // ====================
@@ -107,12 +110,17 @@ app.use("/", userRouter);
 app.use("/listings", listings);
 app.use("/listings/:id/reviews", reviews);
 
-// ✅ FIXED 404 (Node 22 safe)
+
+// ====================
+// 404 HANDLER (Node 22 SAFE)
+// ====================
 app.use((req, res, next) => {
   next(new ExpressError(404, "Page Not Found"));
 });
 
-// ✅ FIXED ERROR HANDLER
+// ====================
+// ERROR HANDLER
+// ====================
 app.use((err, req, res, next) => {
   const { statusCode = 500, message = "Something went wrong" } = err;
 
@@ -122,8 +130,15 @@ app.use((err, req, res, next) => {
 });
 
 // ====================
-// START SERVER
+// START SERVER (Local Only)
 // ====================
-app.listen(8080, () => {
-  console.log("🚀 WanderHub running on port 8080");
-});
+if (process.env.NODE_ENV !== "production") {
+  app.listen(8080, () => {
+    console.log("🚀 WanderHub running on port 8080");
+  });
+}
+
+// ====================
+// FOR VERCEL
+// ====================
+module.exports = app;
