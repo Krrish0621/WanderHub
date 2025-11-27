@@ -77,13 +77,13 @@ WanderHub/
 
 Create a `.env` file in the root directory and add the following:
 
-ATLASDB_URL=your_mongodb_connection_string 
-MAPTILER_KEY=your_maptiler_api_key
-CLOUD_NAME=your_cloudinary_cloud_name
-CLOUD_API_KEY=your_cloudinary_api_key
-CLOUD_API_SECRET=your_cloudinary_api_secret
-GEMINI_API_KEY=your_gemini_api_key
-SECRET=your_session_secret
+ATLASDB_URL=your_mongodb_connection_string <br>
+MAPTILER_KEY=your_maptiler_api_key<br>
+CLOUD_NAME=your_cloudinary_cloud_name<br>
+CLOUD_API_KEY=your_cloudinary_api_key<br>
+CLOUD_API_SECRET=your_cloudinary_api_secret<br>
+GEMINI_API_KEY=your_gemini_api_key<br>
+SECRET=your_session_secret<br>
 
 ---
 
